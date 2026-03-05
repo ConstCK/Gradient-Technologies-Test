@@ -1,3 +1,10 @@
+"""
+Alembic env: миграции для приложения.
+Запускать из корня проекта (где .env и alembic.ini), с активированным venv:
+  alembic revision --autogenerate -m "описание"
+  alembic upgrade head
+  alembic downgrade -1
+"""
 import asyncio
 import os
 import sys
@@ -11,7 +18,10 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from alembic import context
 
 # Корень проекта в sys.path для импорта core и models
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+_project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, _project_root)
+if os.getcwd() != _project_root:
+    os.chdir(_project_root)
 
 from core.config.settings import get_settings
 from core.database import Base
