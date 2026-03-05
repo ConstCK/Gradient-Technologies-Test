@@ -1,0 +1,11 @@
+.env
+__pycache__/
+*.py[cod]
+*.so
+.Python
+logs/
+*.db
+.venv/
+venv/
+.env.local
+/.cursor
