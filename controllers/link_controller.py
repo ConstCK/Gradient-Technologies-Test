@@ -34,8 +34,8 @@ async def shorten(
 
 
 @router.get(
-    '/stats/{short_id}',
-    description='Получить количество переходов по короткой ссылке',
+    '/stats/{short_id:path}',
+    description='Получить количество переходов по короткой ссылке. Идентификатор можно передать с префиксом gradient-technologies/ или без — префикс будет удалён.',
     response_model=LinkStatsRead,
     responses={
         status.HTTP_200_OK: {'description': 'Статистика по ссылке'},
@@ -43,7 +43,7 @@ async def shorten(
     },
 )
 async def stats(
-    short_id: Annotated[str, Path(description='Короткий идентификатор')],
+    short_id: Annotated[str, Path(description='Короткий идентификатор (без префикса или gradient-technologies/...)')],
     service: LinkServiceDep,
 ) -> LinkStatsRead:
     key = normalize_short_id(short_id)
@@ -54,7 +54,7 @@ async def stats(
 
 
 @router.get(
-    f'/{SHORT_LINK_PREFIX.rstrip("/")}/{{short_id}}',
+    '/{short_id:path}',
     description='Редирект на оригинальную ссылку',
     responses={
         status.HTTP_302_FOUND: {'description': 'Редирект на оригинал'},

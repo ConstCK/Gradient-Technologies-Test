@@ -19,6 +19,12 @@ class LinkRepository:
         result = await self._session.execute(select(Link).where(Link.short_id == short_id))
         return result.scalar_one_or_none()
 
+    async def get_by_original_url(self, original_url: str) -> Link | None:
+        result = await self._session.execute(
+            select(Link).where(Link.original_url == original_url)
+        )
+        return result.scalar_one_or_none()
+
     async def increment_clicks(self, link: Link) -> None:
         await self._session.execute(
             update(Link).where(Link.id == link.id).values(clicks=Link.clicks + 1)

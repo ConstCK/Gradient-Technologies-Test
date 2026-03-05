@@ -18,6 +18,10 @@ class LinkService:
         return secrets.token_urlsafe(SHORT_ID_LENGTH)[:SHORT_ID_LENGTH]
 
     async def shorten(self, original_url: str) -> Link:
+        existing = await self._repo.get_by_original_url(original_url)
+        if existing is not None:
+            logger.info('Возвращена существующая ссылка short_id=%s', existing.short_id)
+            return existing
         for _ in range(MAX_COLLISION_RETRIES):
             suffix = self._generate_short_id()
             existing = await self._repo.get_by_short_id(suffix)

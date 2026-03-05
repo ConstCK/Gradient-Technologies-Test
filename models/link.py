@@ -10,7 +10,7 @@ class Link(Base):
     __tablename__ = 'links'
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    original_url: Mapped[str] = mapped_column(String(2048), nullable=False)
+    original_url: Mapped[str] = mapped_column(String(2048), unique=True, nullable=False)
     short_id: Mapped[str] = mapped_column(String(16), unique=True, index=True, nullable=False)
     clicks: Mapped[int] = mapped_column(default=0, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
