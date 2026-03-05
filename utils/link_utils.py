@@ -1,6 +1,8 @@
 from core.constants import SHORT_LINK_PREFIX
 
 
-def ensure_short_id_prefix(short_id: str) -> str:
-    """Возвращает short_id с префиксом (для поиска в БД)."""
-    return short_id if short_id.startswith(SHORT_LINK_PREFIX) else SHORT_LINK_PREFIX + short_id
+def normalize_short_id(short_id: str) -> str:
+    """Возвращает короткий идентификатор без префикса (для поиска в БД)."""
+    if short_id.startswith(SHORT_LINK_PREFIX):
+        return short_id.removeprefix(SHORT_LINK_PREFIX)
+    return short_id

@@ -6,7 +6,7 @@ from fastapi.responses import RedirectResponse
 from core.constants import SHORT_LINK_PREFIX
 from core.dependencies import LinkServiceDep
 from schemas.link_schemas import LinkCreate, LinkRead, LinkStatsRead
-from utils.link_utils import ensure_short_id_prefix
+from utils.link_utils import normalize_short_id
 
 
 router = APIRouter(tags=['links'])
@@ -27,7 +27,10 @@ async def shorten(
     service: LinkServiceDep,
 ) -> LinkRead:
     link = await service.shorten(str(body.url))
-    return LinkRead(short_id=link.short_id, original_url=link.original_url)
+    return LinkRead(
+        short_id=SHORT_LINK_PREFIX + link.short_id,
+        original_url=link.original_url,
+    )
 
 
 @router.get(
@@ -43,11 +46,11 @@ async def stats(
     short_id: Annotated[str, Path(description='Короткий идентификатор')],
     service: LinkServiceDep,
 ) -> LinkStatsRead:
-    key = ensure_short_id_prefix(short_id)
+    key = normalize_short_id(short_id)
     clicks = await service.get_stats(key)
     if clicks is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Ссылка не найдена')
-    return LinkStatsRead(short_id=key, clicks=clicks)
+    return LinkStatsRead(short_id=SHORT_LINK_PREFIX + key, clicks=clicks)
 
 
 @router.get(
@@ -59,11 +62,11 @@ async def stats(
     },
 )
 async def redirect_to_original(
-    short_id: Annotated[str, Path(description='Короткий идентификатор (суффикс)')],
+    short_id: Annotated[str, Path(description='Короткий идентификатор (без префикса или с префиксом — будет очищен)')],
     service: LinkServiceDep,
 ) -> RedirectResponse:
-    full_id = ensure_short_id_prefix(short_id)
-    original_url = await service.record_click(full_id)
+    key = normalize_short_id(short_id)
+    original_url = await service.record_click(key)
     if original_url is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Ссылка не найдена')
     return RedirectResponse(url=original_url, status_code=status.HTTP_302_FOUND)

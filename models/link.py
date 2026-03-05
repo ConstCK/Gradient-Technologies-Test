@@ -11,10 +11,11 @@ class Link(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     original_url: Mapped[str] = mapped_column(String(2048), nullable=False)
-    short_id: Mapped[str] = mapped_column(String(64), unique=True, index=True, nullable=False)
+    short_id: Mapped[str] = mapped_column(String(16), unique=True, index=True, nullable=False)
     clicks: Mapped[int] = mapped_column(default=0, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
-        default=lambda: datetime.now(timezone.utc), nullable=False
+        default=lambda: datetime.now(timezone.utc).replace(tzinfo=None),
+        nullable=False,
     )
 
     def __repr__(self) -> str:

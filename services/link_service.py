@@ -3,7 +3,7 @@ import secrets
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.constants import MAX_COLLISION_RETRIES, SHORT_ID_LENGTH, SHORT_LINK_PREFIX
+from core.constants import MAX_COLLISION_RETRIES, SHORT_ID_LENGTH
 from models.link import Link
 from repositories.link_repository import LinkRepository
 
@@ -20,11 +20,10 @@ class LinkService:
     async def shorten(self, original_url: str) -> Link:
         for _ in range(MAX_COLLISION_RETRIES):
             suffix = self._generate_short_id()
-            full_short_id = SHORT_LINK_PREFIX + suffix
-            existing = await self._repo.get_by_short_id(full_short_id)
+            existing = await self._repo.get_by_short_id(suffix)
             if existing is None:
-                link = await self._repo.create(original_url=original_url, short_id=full_short_id)
-                logger.info('Создана короткая ссылка short_id=%s', full_short_id)
+                link = await self._repo.create(original_url=original_url, short_id=suffix)
+                logger.info('Создана короткая ссылка short_id=%s', suffix)
                 return link
         raise RuntimeError('Не удалось сгенерировать уникальный short_id')
 
