@@ -30,8 +30,7 @@ class Settings(BaseSettings):
     app_name: str = 'Тестовое для "Градиент технологии"'
     debug: bool = False
     log_level: str = 'INFO'
-
-    database_url: str = 'postgresql+asyncpg://postgres:admin@localhost:5432/gradient_test'
+    database_url: str 
 
 
 def get_settings() -> Settings:

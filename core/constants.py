@@ -1,0 +1,3 @@
+SHORT_LINK_PREFIX = 'gradient-technologies/'
+SHORT_ID_LENGTH = 8
+MAX_COLLISION_RETRIES = 10
