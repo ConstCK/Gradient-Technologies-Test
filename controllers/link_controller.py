@@ -21,7 +21,7 @@ router = APIRouter(tags=['links'])
     status_code=status.HTTP_201_CREATED,
     responses={
         status.HTTP_201_CREATED: {'description': 'Ссылка создана'},
-        status.HTTP_422_UNPROCESSABLE_ENTITY: {'description': 'Ошибка валидации тела запроса'},
+        status.HTTP_422_UNPROCESSABLE_CONTENT: {'description': 'Ошибка валидации тела запроса'},
         status.HTTP_503_SERVICE_UNAVAILABLE: {'description': 'Сервис временно перегружен'},
     },
 )
@@ -30,7 +30,7 @@ async def shorten(
     service: LinkServiceDep,
 ) -> LinkRead:
     try:
-        link = await service.shorten(body.url)
+        link = await service.shorten(str(body.url))
     except ShortIdGenerationError:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
