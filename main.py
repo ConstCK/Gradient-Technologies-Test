@@ -5,25 +5,28 @@ from fastapi import APIRouter, FastAPI
 
 from core.config.settings import get_settings, setup_logging
 from core.database import Base, engine
+from core.exceptions import NotFoundError, not_found_handler
 from controllers.health_controller import router as health_router
 from controllers.link_controller import router as link_router
 import models.link  # noqa: F401 — регистрация модели в Base.metadata
 
+settings = get_settings()
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    settings = get_settings()
     setup_logging(settings.log_level)
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     yield
-    pass
 
 
 app = FastAPI(
-    title=get_settings().app_name,
+    title=settings.app_name,
+    description='API сервиса сокращения ссылок: создание коротких ссылок, редирект и статистика переходов.',
     lifespan=lifespan,
 )
+app.add_exception_handler(NotFoundError, not_found_handler)
 
 main_router = APIRouter()
 main_router.include_router(health_router)

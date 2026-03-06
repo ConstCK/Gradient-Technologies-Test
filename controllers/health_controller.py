@@ -5,6 +5,7 @@ router = APIRouter(prefix='/health', tags=['health'])
 
 @router.get(
     '',
+    summary='Проверка доступности',
     description='Проверка доступности сервиса',
     responses={
         status.HTTP_200_OK: {'description': 'Сервис доступен'},

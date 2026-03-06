@@ -4,6 +4,7 @@ import secrets
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.constants import MAX_COLLISION_RETRIES, SHORT_ID_LENGTH
+from core.exceptions import NotFoundError, ShortIdGenerationError
 from models.link import Link
 from repositories.link_repository import LinkRepository
 
@@ -29,19 +30,17 @@ class LinkService:
                 link = await self._repo.create(original_url=original_url, short_id=suffix)
                 logger.info('Создана короткая ссылка short_id=%s', suffix)
                 return link
-        raise RuntimeError('Не удалось сгенерировать уникальный short_id')
+        raise ShortIdGenerationError('Не удалось сгенерировать уникальный short_id')
 
-    async def get_original_url(self, short_id: str) -> str | None:
-        link = await self._repo.get_by_short_id(short_id)
-        return link.original_url if link else None
-
-    async def record_click(self, short_id: str) -> str | None:
+    async def record_click(self, short_id: str) -> str:
         link = await self._repo.get_by_short_id(short_id)
         if link is None:
-            return None
+            raise NotFoundError('Ссылка не найдена')
         await self._repo.increment_clicks(link)
         return link.original_url
 
-    async def get_stats(self, short_id: str) -> int | None:
+    async def get_stats(self, short_id: str) -> int:
         link = await self._repo.get_by_short_id(short_id)
-        return link.clicks if link else None
+        if link is None:
+            raise NotFoundError('Ссылка не найдена')
+        return link.clicks

@@ -30,4 +30,4 @@ services:
     command: pytest tests/ -v
     environment:
       # conftest подставляет sqlite in-memory до импорта app — postgres не нужен
-      DATABASE_URL: sqlite+aiosqlite:///:memory:
+      DATABASE_URL: "sqlite+aiosqlite:///:memory:"

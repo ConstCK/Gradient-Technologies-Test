@@ -1,13 +1,16 @@
-class AppException(Exception):
-    def __init__(self, message: str, code: str | None = None) -> None:
-        self.message = message
-        self.code = code
-        super().__init__(message)
+from fastapi import Request
+from fastapi.responses import JSONResponse
 
 
-class NotFoundError(AppException):
+class NotFoundError(Exception):
     pass
 
 
-class ValidationError(AppException):
+class ShortIdGenerationError(Exception):
+    """Исключение при исчерпании попыток генерации уникального short_id."""
+
     pass
+
+
+def not_found_handler(_request: Request, exc: NotFoundError) -> JSONResponse:
+    return JSONResponse(status_code=404, content={'detail': str(exc)})

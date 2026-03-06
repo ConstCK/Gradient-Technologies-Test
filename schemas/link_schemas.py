@@ -1,19 +1,25 @@
-from pydantic import BaseModel, ConfigDict, HttpUrl
+from pydantic import BaseModel, ConfigDict, Field, HttpUrl
 
 
 class LinkCreate(BaseModel):
-    url: HttpUrl
+    """Тело запроса на сокращение ссылки."""
+
+    url: HttpUrl = Field(description='Исходный URL для сокращения')
 
 
 class LinkRead(BaseModel):
+    """Ответ с созданной короткой ссылкой."""
+
     model_config = ConfigDict(from_attributes=True)
 
-    short_id: str
-    original_url: str
+    short_id: str = Field(description='Короткий идентификатор (с префиксом)')
+    original_url: str = Field(description='Исходный URL')
 
 
 class LinkStatsRead(BaseModel):
+    """Статистика переходов по короткой ссылке."""
+
     model_config = ConfigDict(from_attributes=True)
 
-    short_id: str
-    clicks: int
+    short_id: str = Field(description='Короткий идентификатор')
+    clicks: int = Field(description='Количество переходов')
