@@ -4,6 +4,15 @@ from pydantic import BaseModel, ConfigDict, Field, HttpUrl
 class LinkCreate(BaseModel):
     """Тело запроса на сокращение ссылки."""
 
+    model_config = ConfigDict(
+        json_schema_extra={
+            'examples': [
+                {'url': 'https://example.com/some-page'},
+                {'url': 'https://github.com'},
+            ],
+        },
+    )
+
     url: HttpUrl = Field(description='Исходный URL для сокращения')
 
 

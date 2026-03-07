@@ -53,7 +53,10 @@ async def shorten(
     },
 )
 async def stats(
-    short_id: Annotated[str, Path(description='Короткий идентификатор (без префикса или gradient-technologies/...)')],
+    short_id: Annotated[
+        str,
+        Path(description='Короткий идентификатор (без префикса или gradient-technologies/...)', example='abc12def'),
+    ],
     service: LinkServiceDep,
 ) -> LinkStatsRead:
     key = normalize_short_id(short_id)
@@ -71,7 +74,10 @@ async def stats(
     },
 )
 async def redirect_to_original(
-    short_id: Annotated[str, Path(description='Короткий идентификатор (без префикса или с префиксом — будет очищен)')],
+    short_id: Annotated[
+        str,
+        Path(description='Короткий идентификатор (без префикса или с префиксом — будет очищен)', example='abc12def'),
+    ],
     service: LinkServiceDep,
 ) -> RedirectResponse:
     key = normalize_short_id(short_id)
