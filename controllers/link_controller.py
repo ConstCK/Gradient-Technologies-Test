@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Body, Example, HTTPException, Path, status
+from fastapi import APIRouter, Body, HTTPException, Path, status
 from fastapi.responses import RedirectResponse
 
 from core.constants import SHORT_LINK_PREFIX
@@ -62,7 +62,7 @@ async def shorten(
 async def stats(
     short_id: Annotated[
         str,
-        Path(description='Короткий идентификатор (без префикса или gradient-technologies/...)', examples=[Example(value='abc12def')]),
+        Path(description='Короткий идентификатор (без префикса или gradient-technologies/...)', example='abc12def'),
     ],
     service: LinkServiceDep,
 ) -> LinkStatsRead:
@@ -83,7 +83,7 @@ async def stats(
 async def redirect_to_original(
     short_id: Annotated[
         str,
-        Path(description='Короткий идентификатор (без префикса или с префиксом — будет очищен)', examples=[Example(value='abc12def')]),
+        Path(description='Короткий идентификатор (без префикса или с префиксом — будет очищен)', example='abc12def'),
     ],
     service: LinkServiceDep,
 ) -> RedirectResponse:
