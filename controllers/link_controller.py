@@ -6,6 +6,7 @@ from fastapi.responses import RedirectResponse
 from core.constants import SHORT_LINK_PREFIX
 from core.dependencies import LinkServiceDep
 from core.exceptions import ShortIdGenerationError
+from core.openapi_responses import VALIDATION_ERROR_422_EXAMPLE, error_response
 from schemas.link_schemas import LinkCreate, LinkRead, LinkStatsRead
 from utils.link_utils import normalize_short_id
 
@@ -21,8 +22,14 @@ router = APIRouter(tags=['links'])
     status_code=status.HTTP_201_CREATED,
     responses={
         status.HTTP_201_CREATED: {'description': 'Ссылка создана'},
-        status.HTTP_422_UNPROCESSABLE_CONTENT: {'description': 'Ошибка валидации тела запроса'},
-        status.HTTP_503_SERVICE_UNAVAILABLE: {'description': 'Сервис временно перегружен'},
+        status.HTTP_422_UNPROCESSABLE_CONTENT: error_response(
+            'Ошибка валидации тела запроса',
+            VALIDATION_ERROR_422_EXAMPLE,
+        ),
+        status.HTTP_503_SERVICE_UNAVAILABLE: error_response(
+            'Сервис временно перегружен',
+            'Сервис временно перегружен',
+        ),
     },
 )
 async def shorten(
@@ -49,7 +56,7 @@ async def shorten(
     response_model=LinkStatsRead,
     responses={
         status.HTTP_200_OK: {'description': 'Статистика по ссылке'},
-        status.HTTP_404_NOT_FOUND: {'description': 'Ссылка не найдена'},
+        status.HTTP_404_NOT_FOUND: error_response('Ссылка не найдена', 'Ссылка не найдена'),
     },
 )
 async def stats(
@@ -70,7 +77,7 @@ async def stats(
     description='Редирект на оригинальную ссылку',
     responses={
         status.HTTP_302_FOUND: {'description': 'Редирект на оригинал'},
-        status.HTTP_404_NOT_FOUND: {'description': 'Ссылка не найдена'},
+        status.HTTP_404_NOT_FOUND: error_response('Ссылка не найдена', 'Ссылка не найдена'),
     },
 )
 async def redirect_to_original(
